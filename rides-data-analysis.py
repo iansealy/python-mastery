@@ -10,7 +10,7 @@ print("1: ", len(routes))
 print(
     "2: ",
     sum(
-        ride.rides for ride in rides if ride.route == "21" and ride.date == "02/02/2011"
+        ride.rides for ride in rides if ride.route == "22" and ride.date == "02/02/2011"
     ),
 )
 
