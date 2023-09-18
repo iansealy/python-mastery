@@ -1,6 +1,6 @@
 from collections import Counter
 
-from . import readrides
+import readrides
 
 rides = readrides.read_rides_as_objects_with_slots("Data/ctabus.csv")
 
