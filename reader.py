@@ -15,6 +15,19 @@ def read_csv_as_dicts(filename, coltypes):
     return records
 
 
+def read_csv_as_instances(filename, cls):
+    """
+    Read a CSV file into a list of instances
+    """
+    records = []
+    with open(filename) as f:
+        rows = csv.reader(f)
+        _headers = next(rows)
+        for row in rows:
+            records.append(cls.from_row(row))
+    return records
+
+
 def read_csv_as_columns(filename, types):
     data = []
     with open(filename) as f:
