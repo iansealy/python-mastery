@@ -30,7 +30,7 @@ class Stock:
             raise TypeError("Expected a " + self._types[2].__name__)
         if value < 0:
             raise ValueError("price must be >= 0")
-        self._shares = value
+        self._price = value
 
     @classmethod
     def from_row(cls, row):
