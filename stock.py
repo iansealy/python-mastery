@@ -37,6 +37,15 @@ class Stock:
         values = [func(val) for func, val in zip(cls._types, row)]
         return cls(*values)
 
+    def __repr__(self):
+        return f"{type(self).__name__}({self.name!r}, {self.shares!r}, {self.price!r})"
+
+    def __eq__(self, other):
+        return isinstance(other, Stock) and (
+            (self.name, self.shares, self.price)
+            == (other.name, other.shares, other.price)
+        )
+
     @property
     def cost(self):
         return self.shares * self.price
