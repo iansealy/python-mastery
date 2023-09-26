@@ -1,6 +1,19 @@
 from abc import ABC, abstractmethod
 
 
+class UpperHeadersMixin:
+    def headings(self, headers):
+        super().headings([h.upper() for h in headers])
+
+
+class ColumnFormatMixin:
+    formats = []
+
+    def row(self, rowdata):
+        rowdata = [(fmt % d) for fmt, d in zip(self.formats, rowdata)]
+        super().row(rowdata)
+
+
 class TableFormatter(ABC):
     @abstractmethod
     def headings(self, headers):
@@ -36,13 +49,25 @@ class HTMLTableFormatter(TableFormatter):
         print("<tr>", " ".join("<td>" + str(d) + "</td>" for d in rowdata), "</tr>")
 
 
-def create_formatter(format):
-    if format == "txt":
-        return TextTableFormatter()
+def create_formatter(format, column_formats=None, upper_headers=False):
+    if format == "txt" or format == "text":
+        cls = TextTableFormatter
     elif format == "csv":
-        return CSVTableFormatter()
+        cls = CSVTableFormatter
     elif format == "html":
-        return HTMLTableFormatter()
+        cls = HTMLTableFormatter
+
+    if column_formats:
+
+        class PortfolioFormatter(ColumnFormatMixin, cls):
+            formats = column_formats
+
+    if upper_headers:
+
+        class PortfolioFormatter(UpperHeadersMixin, cls):
+            pass
+
+    return PortfolioFormatter()
 
 
 def print_table(records, fields, formatter):
