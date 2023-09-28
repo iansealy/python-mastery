@@ -1,8 +1,19 @@
 # validate.py
+
+
 class Validator:
+    def __init__(self, name=None):
+        self.name = name
+
+    def __set_name__(self, cls, name):
+        self.name = name
+
     @classmethod
     def check(cls, value):
         return value
+
+    def __set__(self, instance, value):
+        instance.__dict__[self.name] = self.check(value)
 
 
 class Typed(Validator):
@@ -56,38 +67,16 @@ class NonEmptyString(String, NonEmpty):
 
 
 class Stock:
-    __slots__ = ("_name", "_shares", "_price")
-
     _types = (str, int, float)
+
+    name = String()
+    shares = PositiveInteger()
+    price = PositiveFloat()
 
     def __init__(self, name, shares, price):
         self.name = name
         self.shares = shares
         self.price = price
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = NonEmptyString.check(value)
-
-    @property
-    def shares(self):
-        return self._shares
-
-    @shares.setter
-    def shares(self, value):
-        self._shares = PositiveInteger.check(value)
-
-    @property
-    def price(self):
-        return self._price
-
-    @price.setter
-    def price(self, value):
-        self._price = PositiveFloat.check(value)
 
     @classmethod
     def from_row(cls, row):
