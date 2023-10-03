@@ -55,3 +55,11 @@ def csv_as_instances(
         record = cls.from_row(row)
         records.append(record)
     return records
+
+
+def parse_line(line):
+    try:
+        name, val = line.split("=", 2)
+        return (name, val)
+    except ValueError:
+        return None
