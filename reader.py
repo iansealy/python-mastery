@@ -31,14 +31,13 @@ def csv_as_dicts(
     """
     Convert CSV data into a list of dictionaries with optional type conversion
     """
-    records = []
-    rows = csv.reader(lines)
-    if headers is None:
-        headers = next(rows)
-    for row in rows:
-        record = {name: func(val) for name, func, val in zip(headers, types, row)}
-        records.append(record)
-    return records
+    return convert_csv(
+        lines,
+        lambda headers, row: {
+            name: func(val) for name, func, val in zip(headers, types, row)
+        },
+        headers,
+    )
 
 
 def csv_as_instances(
@@ -47,14 +46,14 @@ def csv_as_instances(
     """
     Convert CSV data into a list of instances
     """
-    records = []
+    return convert_csv(lines, lambda headers, row: cls.from_row(row), headers)
+
+
+def convert_csv(lines, func, headers=None):
     rows = csv.reader(lines)
     if headers is None:
         headers = next(rows)
-    for row in rows:
-        record = cls.from_row(row)
-        records.append(record)
-    return records
+    return list(map(lambda row: func(headers, row), rows))
 
 
 def parse_line(line):
