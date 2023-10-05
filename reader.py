@@ -1,8 +1,11 @@
 # reader.py
 
 import csv
+import logging
 from collections.abc import Iterable
 from typing import List, Union
+
+log = logging.getLogger(__name__)
 
 
 def read_csv_as_dicts(
@@ -50,10 +53,18 @@ def csv_as_instances(
 
 
 def convert_csv(lines, func, headers=None):
+    records = []
     rows = csv.reader(lines)
     if headers is None:
         headers = next(rows)
-    return list(map(lambda row: func(headers, row), rows))
+    for rownum, row in enumerate(rows, start=1):
+        try:
+            record = func(headers, row)
+            records.append(record)
+        except ValueError as e:
+            log.warning(f"Row {rownum}: Bad row: {row}")
+            log.debug(f"Row {rownum}: Reason : {e}")
+    return records
 
 
 def parse_line(line):
