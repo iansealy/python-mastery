@@ -1,9 +1,14 @@
+# structure.py
+import sys
+
+
 class Structure:
-    def __init__(self, *args):
-        if len(args) != len(self._fields):
-            raise TypeError(f"Expected {len(self._fields)} arguments")
-        for i, field in enumerate(self._fields):
-            setattr(self, field, args[i])
+    @staticmethod
+    def _init():
+        locs = sys._getframe(1).f_locals
+        self = locs.pop("self")
+        for name, val in locs.items():
+            setattr(self, name, val)
 
     def __setattr__(self, name, value):
         if not name.startswith("_") and name not in self._fields:
