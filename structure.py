@@ -1,5 +1,4 @@
 # structure.py
-import inspect
 import sys
 
 
@@ -20,6 +19,11 @@ class Structure:
         return f"{type(self).__name__}({self.name!r}, {self.shares!r}, {self.price!r})"
 
     @classmethod
-    def set_fields(cls):
-        sig = inspect.signature(cls)
-        cls._fields = tuple(sig.parameters)
+    def create_init(cls):
+        argstr = ",".join(cls._fields)
+        code = f"def __init__(self, {argstr}):\n"
+        for name in cls._fields:
+            code += f"    self.{name} = {name}\n"
+        locs = {}
+        exec(code, locs)
+        cls.__init__ = locs["__init__"]
