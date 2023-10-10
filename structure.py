@@ -1,4 +1,5 @@
 # structure.py
+import inspect
 import sys
 
 
@@ -17,3 +18,8 @@ class Structure:
 
     def __repr__(self):
         return f"{type(self).__name__}({self.name!r}, {self.shares!r}, {self.price!r})"
+
+    @classmethod
+    def set_fields(cls):
+        sig = inspect.signature(cls)
+        cls._fields = tuple(sig.parameters)
