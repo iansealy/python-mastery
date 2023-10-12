@@ -1,5 +1,7 @@
 # validate.py
 
+import inspect
+
 
 class Validator:
     def __init__(self, name=None):
@@ -99,3 +101,16 @@ class Stock:
     def sell(self, nshares):
         self.shares -= nshares
         return
+
+
+class ValidatedFunction:
+    def __init__(self, func):
+        self.func = func
+        self.sig = inspect.signature(func)
+
+    def __call__(self, *args, **kwargs):
+        bound = self.sig.bind(*args, **kwargs)
+        for name, val in bound.arguments.items():
+            self.func.__annotations__[name].check(val)
+        result = self.func(*args, **kwargs)
+        return result
