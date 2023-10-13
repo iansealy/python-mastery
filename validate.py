@@ -114,3 +114,31 @@ class ValidatedFunction:
             self.func.__annotations__[name].check(val)
         result = self.func(*args, **kwargs)
         return result
+
+
+def validated(func):
+    sig = inspect.signature(func)
+
+    def wrapper(*args, **kwargs):
+        bound = sig.bind(*args, **kwargs)
+        try:
+            for name, val in bound.arguments.items():
+                if name == "self":
+                    continue
+                func.__annotations__[name].check(val)
+        except TypeError:
+            errors = [
+                f"    {name}: Expected {func.__annotations__[name]}"
+                for name, _ in bound.arguments.items()
+                if name != "self"
+            ]
+            raise TypeError("Bad Arguments\n" + "\n".join(errors)) from None
+        retval = func(*args, **kwargs)
+        try:
+            if "return" in func.__annotations__:
+                func.__annotations__["return"].check(retval)
+        except TypeError as e:
+            raise TypeError(f"Bad return: {e}") from None
+        return retval
+
+    return wrapper
