@@ -1,6 +1,7 @@
 # validate.py
 
 import inspect
+from functools import wraps
 
 
 class Validator:
@@ -119,6 +120,7 @@ class ValidatedFunction:
 def validated(func):
     sig = inspect.signature(func)
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
         bound = sig.bind(*args, **kwargs)
         try:
@@ -142,3 +144,35 @@ def validated(func):
         return retval
 
     return wrapper
+
+
+def enforce(**typekwargs):
+    def decorator(func):
+        sig = inspect.signature(func)
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            bound = sig.bind(*args, **kwargs)
+            try:
+                for name, val in typekwargs.items():
+                    if name == "return_":
+                        continue
+                    val.check(bound.arguments[name])
+            except TypeError:
+                errors = [
+                    f"    {name}: Expected {val}"
+                    for name, val in typekwargs.items()
+                    if name != "return_"
+                ]
+                raise TypeError("Bad Arguments\n" + "\n".join(errors)) from None
+            retval = func(*args, **kwargs)
+            try:
+                if "return_" in typekwargs:
+                    typekwargs["return_"].check(retval)
+            except TypeError as e:
+                raise TypeError(f"Bad return: {e}") from None
+            return retval
+
+        return wrapper
+
+    return decorator
