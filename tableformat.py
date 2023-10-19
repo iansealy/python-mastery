@@ -59,15 +59,15 @@ def create_formatter(format, column_formats=None, upper_headers=False):
 
     if column_formats:
 
-        class PortfolioFormatter(ColumnFormatMixin, cls):
+        class cls(ColumnFormatMixin, cls):
             formats = column_formats
 
     if upper_headers:
 
-        class PortfolioFormatter(UpperHeadersMixin, cls):
+        class cls(UpperHeadersMixin, cls):
             pass
 
-    return PortfolioFormatter()
+    return cls()
 
 
 def print_table(records, fields, formatter):

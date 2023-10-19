@@ -19,6 +19,13 @@ class Validator:
     def __set__(self, instance, value):
         instance.__dict__[self.name] = self.check(value)
 
+    # Collect all derived classes into a dict
+    validators = {}
+
+    @classmethod
+    def __init_subclass__(cls):
+        cls.validators[cls.__name__] = cls
+
 
 class Typed(Validator):
     expected_type = object
