@@ -32,7 +32,11 @@ class Structure(metaclass=StructureMeta):
         super().__setattr__(name, value)
 
     def __repr__(self):
-        return f"{type(self).__name__}({self.name!r}, {self.shares!r}, {self.price!r})"
+        return (
+            f"{type(self).__name__}("
+            + ", ".join(f"{getattr(self, name)!r}" for name in self._fields)
+            + ")"
+        )
 
     def __iter__(self):
         for name in self._fields:
