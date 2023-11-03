@@ -34,6 +34,13 @@ class Structure(metaclass=StructureMeta):
     def __repr__(self):
         return f"{type(self).__name__}({self.name!r}, {self.shares!r}, {self.price!r})"
 
+    def __iter__(self):
+        for name in self._fields:
+            yield getattr(self, name)
+
+    def __eq__(self, other):
+        return isinstance(other, type(self)) and tuple(self) == tuple(other)
+
     @classmethod
     def __init_subclass__(cls):
         validate_attributes(cls)
