@@ -3,12 +3,15 @@ import os
 import time
 
 
-def follow(logfile):
-    f = open(logfile)
-    f.seek(0, os.SEEK_END)  # Move file pointer 0 bytes from end of file
-    while True:
-        line = f.readline()
-        if line == "":
-            time.sleep(0.1)  # Sleep briefly and retry
-            continue
-        yield line
+def follow(filename):
+    try:
+        with open(filename, "r") as f:
+            f.seek(0, os.SEEK_END)
+            while True:
+                line = f.readline()
+                if line == "":
+                    time.sleep(0.1)  # Sleep briefly to avoid busy wait
+                    continue
+                yield line
+    except GeneratorExit:
+        print("Following Done")
