@@ -40,6 +40,12 @@ def printer():
             print("ERROR: %r" % e)
 
 
+def receive(expected_type):
+    msg = yield
+    assert isinstance(msg, expected_type), "Expected type %s" % (expected_type)
+    return msg
+
+
 # Example use
 if __name__ == "__main__":
     follow("Data/stocklog.csv", printer())
