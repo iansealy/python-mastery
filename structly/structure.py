@@ -1,4 +1,7 @@
 # structure.py
+
+__all__ = ["Structure"]
+
 import sys
 from collections import ChainMap
 

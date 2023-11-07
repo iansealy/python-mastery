@@ -1,5 +1,12 @@
 # reader.py
 
+__all__ = [
+    "read_csv_as_dicts",
+    "read_csv_as_instances",
+    "csv_as_dicts",
+    "csv_as_instances",
+]
+
 import csv
 import logging
 from collections.abc import Iterable
