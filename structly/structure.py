@@ -2,7 +2,7 @@
 import sys
 from collections import ChainMap
 
-from validate import Validator, validated
+from .validate import Validator, validated
 
 
 class StructureMeta(type):
