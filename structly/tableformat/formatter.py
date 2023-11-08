@@ -15,39 +15,40 @@ class ColumnFormatMixin:
 
 
 class TableFormatter(ABC):
+    _formats = {}
+
+    @classmethod
+    def __init_subclass__(cls):
+        name = cls.__module__.split(".")[-1]
+        TableFormatter._formats[name] = cls
+
     @abstractmethod
     def headings(self, headers):
-        raise NotImplementedError()
+        pass
 
     @abstractmethod
     def row(self, rowdata):
-        raise NotImplementedError()
+        pass
 
 
-from .formats.csv import CSVTableFormatter
-from .formats.html import HTMLTableFormatter
-from .formats.text import TextTableFormatter
-
-
-def create_formatter(format, column_formats=None, upper_headers=False):
-    if format == "txt" or format == "text":
-        cls = TextTableFormatter
-    elif format == "csv":
-        cls = CSVTableFormatter
-    elif format == "html":
-        cls = HTMLTableFormatter
+def create_formatter(name, column_formats=None, upper_headers=False):
+    if name not in TableFormatter._formats:
+        __import__(f"{__package__}.formats.{name}")
+    formatter_cls = TableFormatter._formats.get(name)
+    if not formatter_cls:
+        raise RuntimeError("Unknown format %s" % name)
 
     if column_formats:
 
-        class cls(ColumnFormatMixin, cls):
+        class formatter_cls(ColumnFormatMixin, formatter_cls):
             formats = column_formats
 
     if upper_headers:
 
-        class cls(UpperHeadersMixin, cls):
+        class formatter_cls(UpperHeadersMixin, formatter_cls):
             pass
 
-    return cls()
+    return formatter_cls()
 
 
 def print_table(records, fields, formatter):
